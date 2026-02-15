@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../model/ownership_model.dart';
 
 class OwnershipService {
-  static const String baseUrl = "http://10.0.2.2:8000/api/v1";
+  static String get baseUrl => dotenv.env['BASE_URL']!;
 
   static Future<List<OwnershipData>> fetchOwnership(
       String ticker) async {
