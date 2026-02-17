@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../../core/config/env.dart';
 import '../model/ownership_model.dart';
 
 class OwnershipService {
-  static String get baseUrl => dotenv.env['BASE_URL']!;
-
   static Future<List<OwnershipData>> fetchOwnership(
       String ticker) async {
-    final uri = Uri.parse("$baseUrl/ownership/changes")
+    final uri = Uri.parse("${Env.baseUrl}/ownership/changes")
         .replace(queryParameters: {
           "ticker": ticker,
           "investor_type": "L",
