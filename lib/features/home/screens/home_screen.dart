@@ -38,6 +38,21 @@ class HomeScreen extends StatelessWidget {
               change: "-1.2M",
               positive: false,
             ),
+            WatchlistItem(
+              ticker: "BBKP",
+              change: "-1.2M",
+              positive: false,
+            ),
+            WatchlistItem(
+              ticker: "MLPL",
+              change: "-1.2M",
+              positive: false,
+            ),
+            WatchlistItem(
+              ticker: "BUMI",
+              change: "-1.2M",
+              positive: false,
+            ),
           ],
         ),
       ),
