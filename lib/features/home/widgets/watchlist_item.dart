@@ -4,41 +4,28 @@ class WatchlistItem extends StatelessWidget {
   final String ticker;
   final String change;
   final bool positive;
+  final VoidCallback? onTap;
 
   const WatchlistItem({
     super.key,
     required this.ticker,
     required this.change,
     required this.positive,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            ticker,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+    return Card(
+      child: ListTile(
+        onTap: onTap,
+        title: Text(ticker),
+        trailing: Text(
+          change,
+          style: TextStyle(
+            color: positive ? Colors.green : Colors.red,
           ),
-          Text(
-            change,
-            style: TextStyle(
-              color: positive ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

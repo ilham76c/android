@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/market_snapshot_card.dart';
 import '../widgets/watchlist_item.dart';
+import '../../emiten_detail/screens/emiten_detail_page.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,7 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
-          children: const [
+          children: [
             SearchBarWidget(),
             SizedBox(height: 20),
             MarketSnapshotCard(),
@@ -29,29 +30,79 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(height: 12),
             WatchlistItem(
-              ticker: "MSIN",
+              ticker: "BBCA",
               change: "+4.3M",
               positive: true,
+               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmitenDetailPage(
+                      ticker: "BBCA",
+                    ),
+                  ),
+                );
+              },
             ),
             WatchlistItem(
-              ticker: "JAYA",
+              ticker: "ASII",
               change: "-1.2M",
               positive: false,
+               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmitenDetailPage(
+                      ticker: "ASII",
+                    ),
+                  ),
+                );
+              },
             ),
             WatchlistItem(
               ticker: "BBKP",
               change: "-1.2M",
               positive: false,
+               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmitenDetailPage(
+                      ticker: "BBKP",
+                    ),
+                  ),
+                );
+              },
             ),
             WatchlistItem(
               ticker: "MLPL",
               change: "-1.2M",
               positive: false,
+               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmitenDetailPage(
+                      ticker: "MLPL",
+                    ),
+                  ),
+                );
+              },
             ),
             WatchlistItem(
               ticker: "BUMI",
               change: "-1.2M",
               positive: false,
+               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmitenDetailPage(
+                      ticker: "BUMI",
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
