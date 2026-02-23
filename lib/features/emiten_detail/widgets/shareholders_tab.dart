@@ -41,7 +41,7 @@ class ShareholdersTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
         Text(
           title,
           style: const TextStyle(
@@ -55,7 +55,7 @@ class ShareholdersTab extends StatelessWidget {
                 title: Text(
                   s['name'],
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     // fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -63,13 +63,13 @@ class ShareholdersTab extends StatelessWidget {
                   ? const Text(
                       "Pengendali", 
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontStyle: FontStyle.italic,
                         color: Colors.green,
                       ),
                     ) 
-                  : s['position'] != null? Text(
-                      "${s['position']}", 
+                  : s['position'] != null && s['position'].toString().isNotEmpty ? Text(
+                      "${s['position']} ${s['is_independent'] == true ? "(Independen)" : ""}", 
                       style: const TextStyle(
                         fontSize: 11,
                         fontStyle: FontStyle.italic,
@@ -77,14 +77,24 @@ class ShareholdersTab extends StatelessWidget {
                       )) : const Text("-", style: const TextStyle(
                         fontSize: 11,
                         fontStyle: FontStyle.italic,
-                        color: Colors.grey,
+                        color: const Color(0xFFCED4DA),
                       )),
                 trailing: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text("${s['percentage']}%"),
-                    Text("${formatter.format(s['shares_count'])} shares"),
+                    Text(
+                      "${s['percentage']}%",
+                      style: const TextStyle(
+                        fontSize: 13,
+                      )
+                    ),
+                    Text(
+                      "${formatter.format(s['shares_count'])} shares",
+                      style: const TextStyle(
+                        fontSize: 11,
+                      )
+                    ),
                   ],
                 )
               ),
