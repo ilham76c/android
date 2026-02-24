@@ -27,6 +27,12 @@ class EmitenDetailPage extends StatelessWidget {
 
           final data = snapshot.data!;
 
+          final List<double> dummySparklineData = [
+            6200, 6220, 6180, 6300, 6350, 6400, 6380,
+            6450, 6500, 6480, 6550, 6600, 6620, 6700,
+            6750, 6800, 6780, 6850, 6900, 6950,
+          ];
+
           return DefaultTabController(
             length: 4,
             child: Column(
@@ -42,7 +48,13 @@ class EmitenDetailPage extends StatelessWidget {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      OverviewTab(profile: data['profile']),
+                      // OverviewTab(profile: data['profile']),
+                      OverviewTab(
+                        profile: data['profile'],
+                        managements: data['managements'],
+                        committees: data['committees'],
+                        sparklineData: data['chart_close_prices'] ?? dummySparklineData, // List<double>
+                      ),
                       DividendsTab(dividends: data['dividends']),
                       ShareholdersTab(shareholders: data['shareholders']),
                       SubsidiariesTab(subsidiaries: data['subsidiaries']),
