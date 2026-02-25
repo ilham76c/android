@@ -24,16 +24,9 @@ class OverviewTab extends StatelessWidget {
         sparklineData.isNotEmpty &&
         sparklineData.last >= sparklineData.first;
 
-    final emaData = calculateEMA(sparklineData, 20);
-
     final priceSpots = List.generate(
       sparklineData.length,
       (i) => FlSpot(i.toDouble(), sparklineData[i]),
-    );
-
-    final emaSpots = List.generate(
-      emaData.length,
-      (i) => FlSpot(i.toDouble(), emaData[i]),
     );
 
     final direksi = managements?.where((m) => m['role_group'] == "Direksi").toList() ?? [];
@@ -42,18 +35,7 @@ class OverviewTab extends StatelessWidget {
 
     final komiteAudit = committees?.where((c) => c['committee_type'] == "Komite Audit").toList() ?? [];
 
-    List<double> generateIntradayData() {
-      final random = Random();
-      double price = 4380;
-      List<double> data = [];
-
-      for (int i = 0; i < 120; i++) {
-        price += random.nextDouble() * 8 - 4;
-        data.add(price);
-      }
-
-      return data;
-    }
+    final prices = generateIntradayData();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -96,9 +78,7 @@ class OverviewTab extends StatelessWidget {
               color: const Color(0xFF111418),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: TradingMiniChart(
-              prices: generateIntradayData(),
-            ),
+            child: AdvancedStockChart(prices: prices),
           ),
 
           const SizedBox(height: 24),
@@ -133,12 +113,6 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Directors",
             children: [
-              // ===== PROFILE SECTION =====
-              // Text(
-              //   profile['sector'] ?? "-",
-              //   // style: Theme.of(context).textTheme.bodyMedium,
-              // ),
-
               ...buildSection(context, "Direksi", direksi),
             ],
           ),
@@ -149,12 +123,6 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Commissioners",
             children: [
-              // ===== PROFILE SECTION =====
-              // Text(
-              //   profile['sector'] ?? "-",
-              //   // style: Theme.of(context).textTheme.bodyMedium,
-              // ),
-
               ...buildSection(context, "Komisaris", komisaris),
             ],
           ),
@@ -171,6 +139,19 @@ class OverviewTab extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<double> generateIntradayData() {
+    final random = Random();
+    double firstPrice = 1000;
+    List<double> data = [];
+
+    for (int i = 0; i < 20; i++) {
+      firstPrice += random.nextDouble() * 8 - 4;
+      data.add(firstPrice);
+    }
+
+    return data;
   }
 
   Widget _buildCard(BuildContext context,
@@ -214,135 +195,6 @@ class OverviewTab extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  /// ===== EMA CALCULATION =====
-  List<double> calculateEMA(List<double> prices, int period) {
-    if (prices.isEmpty) return [];
-
-    List<double> ema = [];
-    double multiplier = 2 / (period + 1);
-    ema.add(prices.first);
-
-    for (int i = 1; i < prices.length; i++) {
-      double value =
-          (prices[i] - ema[i - 1]) * multiplier + ema[i - 1];
-      ema.add(value);
-    }
-
-    return ema;
-  }
-}
-
-class TradingMiniChart extends StatelessWidget {
-  final List<double> prices;
-
-  const TradingMiniChart({super.key, required this.prices});
-
-  @override
-  Widget build(BuildContext context) {
-    if (prices.isEmpty) return const SizedBox();
-
-    final spots = List.generate(
-      prices.length,
-      (i) => FlSpot(i.toDouble(), prices[i]),
-    );
-
-    final minY = prices.reduce((a, b) => a < b ? a : b);
-    final maxY = prices.reduce((a, b) => a > b ? a : b);
-    final currentPrice = prices.last;
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF0A1A3A),
-            Color(0xFF08122B),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: SizedBox(
-        height: 180,
-        child: LineChart(
-          LineChartData(
-            minY: minY - 10,
-            maxY: maxY + 10,
-
-            gridData: FlGridData(show: false),
-            borderData: FlBorderData(show: false),
-
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              topTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              rightTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: (maxY - minY) / 4,
-                  reservedSize: 40,
-                  getTitlesWidget: (value, meta) {
-                    return Text(
-                      value.toStringAsFixed(0),
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 10,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: prices.length / 4,
-                  getTitlesWidget: (value, meta) {
-                    return Text(
-                      value.toInt().toString(),
-                      style: const TextStyle(
-                        color: Colors.white38,
-                        fontSize: 10,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-
-            extraLinesData: ExtraLinesData(
-              horizontalLines: [
-                HorizontalLine(
-                  y: currentPrice,
-                  color: Colors.white38,
-                  strokeWidth: 1,
-                  dashArray: [4, 4],
-                ),
-              ],
-            ),
-
-            lineBarsData: [
-              LineChartBarData(
-                spots: spots,
-                isCurved: false,
-                color: Colors.greenAccent,
-                barWidth: 2,
-                dotData: FlDotData(show: false),
-                belowBarData: BarAreaData(
-                  show: true,
-                  color: Colors.greenAccent.withOpacity(0.25),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -393,4 +245,306 @@ List<Widget> buildSection(
       ),
     );
   }).toList();
+}
+
+class AdvancedStockChart extends StatelessWidget {
+  final List<double> prices;
+
+  const AdvancedStockChart({super.key, required this.prices});
+
+  @override
+  Widget build(BuildContext context) {
+    final lastPrice = prices.last;
+    final firstPrice = prices.first;
+    final change = lastPrice - firstPrice;
+    final percent = (change / firstPrice) * 100;
+    final isDown = change < 0;
+
+    final maxPrice = prices.reduce(max);
+    final minPrice = prices.reduce(min);
+
+    // 👇 paksa kelipatan 10
+    double minY = (minPrice ~/ 10) * 10;
+    double maxY = ((maxPrice ~/ 10) + 1) * 10;
+    double maxX = prices.length.toDouble();
+
+    double reservedWidth = calculateRightTitleWidth(
+      minY: minY,
+      maxY: maxY,
+      interval: 10,
+    );
+
+    final scale = calculateAxisScale(prices);
+
+    return Container(
+      color: Colors.black,
+      padding: const EdgeInsets.all(16),
+      
+      child: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// PRICE HEADER
+              Text(
+                lastPrice.toStringAsFixed(0),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                "${change.toStringAsFixed(0)} (${percent.toStringAsFixed(2)}%)",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isDown ? Colors.red : Colors.green,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// CHART
+              AspectRatio(
+                aspectRatio: 2.5,
+                child: LineChart(
+                  LineChartData(
+                    backgroundColor: Colors.black,
+                    gridData: FlGridData(show: false),
+                    borderData: FlBorderData(show: false),
+
+                    minY: scale.minY,
+                    maxY: scale.maxY,
+                    maxX: maxX,
+
+                    /// Y AXIS
+                    titlesData: FlTitlesData(
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: reservedWidth,
+                          interval: scale.interval, // 👈 kelipatan 10
+                          getTitlesWidget: (value, meta) {
+                            return Text(
+                              value.toStringAsFixed(0),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                    ),
+
+                    /// DASHED LAST PRICE LINE
+                    extraLinesData: ExtraLinesData(
+                      horizontalLines: [
+                        HorizontalLine(
+                          y: lastPrice,
+                          color: Colors.grey.withOpacity(0.4),
+                          strokeWidth: 1,
+                          dashArray: [6, 6],
+                        ),
+                      ],
+                    ),
+
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: List.generate(
+                          prices.length,
+                          (index) => FlSpot(
+                            index.toDouble(),
+                            prices[index],
+                          ),
+                        ),
+                        isCurved: false,
+                        color: isDown ? Colors.red : Colors.green,
+                        barWidth: 2,
+                        dotData: FlDotData(show: false),
+
+                        /// GRADIENT FILL
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              (isDown ? Colors.red : Colors.green)
+                                  .withOpacity(0.4),
+                              Colors.transparent,
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// RANGE SELECTOR
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: const [
+                  _RangeButton("1D", selected: true),
+                  _RangeButton("1W"),
+                  _RangeButton("1M"),
+                  _RangeButton("3M"),
+                  _RangeButton("YTD"),
+                  _RangeButton("1Y"),
+                ],
+              )
+            ],
+          ),
+          /// BADGE
+          Positioned(
+            top: 5,
+            right: 5,
+            child: _BoardBadge(label: "Papan Utama"),
+          ),
+        ]
+      ),
+    );
+  }
+}
+
+double getPriceFraction(double price) {
+  if (price < 200) return 1;
+  if (price < 500) return 2;
+  if (price < 2000) return 5;
+  if (price < 5000) return 10;
+  return 25;
+}
+
+class AxisScale {
+  final double minY;
+  final double maxY;
+  final double interval;
+
+  AxisScale({
+    required this.minY,
+    required this.maxY,
+    required this.interval,
+  });
+}
+
+AxisScale calculateAxisScale(List<double> prices) {
+  double minPrice = prices.reduce((a, b) => a < b ? a : b);
+  double maxPrice = prices.reduce((a, b) => a > b ? a : b);
+
+  double fraction = getPriceFraction((minPrice + maxPrice) / 2);
+
+  const int maxLabels = 6;
+
+  double range = maxPrice - minPrice;
+
+  // interval minimum sesuai fraksi
+  double interval = fraction;
+
+  // naikkan interval sampai label <= maxLabels
+  while ((range / interval).ceil() > maxLabels) {
+    interval += fraction;
+  }
+
+  double minY = (minPrice ~/ interval) * interval;
+  double maxY = ((maxPrice ~/ interval) + 1) * interval;
+
+  return AxisScale(
+    minY: minY,
+    maxY: maxY,
+    interval: interval,
+  );
+}
+
+class _RangeButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+
+  const _RangeButton(this.label, {this.selected = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: TextStyle(
+        color: selected ? Colors.green : Colors.grey,
+        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+      ),
+    );
+  }
+}
+
+
+double calculateRightTitleWidth({
+  required double minY,
+  required double maxY,
+  required double interval,
+  TextStyle? style,
+}) {
+  final textStyle = style ??
+      const TextStyle(
+        fontSize: 11,
+        color: Colors.grey,
+      );
+
+  double maxWidth = 0;
+
+  for (double value = minY; value <= maxY; value += interval) {
+    final text = value.toStringAsFixed(0);
+
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: textStyle),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    if (tp.width > maxWidth) {
+      maxWidth = tp.width;
+    }
+  }
+
+  return maxWidth + 5; // kasih sedikit padding
+}
+
+
+class _BoardBadge extends StatelessWidget {
+  final String label;
+
+  const _BoardBadge({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 3,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.blue,
+          width: 1,
+        ),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.blue,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
 }
