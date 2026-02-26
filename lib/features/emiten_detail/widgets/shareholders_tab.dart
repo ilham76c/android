@@ -48,7 +48,7 @@ class ShareholdersTab extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -62,7 +62,7 @@ class ShareholdersTab extends StatelessWidget {
                   title: Text(
                     s['name'],
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       // fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -96,7 +96,7 @@ class ShareholdersTab extends StatelessWidget {
                     children: [
                       Text("${s['percentage']}%",
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                           )),
                       Text("${formatter.format(s['shares_count'])} shares",
                           style: const TextStyle(

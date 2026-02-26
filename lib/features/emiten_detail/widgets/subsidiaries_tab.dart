@@ -20,17 +20,17 @@ class SubsidiariesTab extends StatelessWidget {
             title: Text(s['name'],
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 15,
+                  fontSize: 14,
                 )),
             subtitle: Text("${s['business_line']} • ${s['location']}",
                 style: const TextStyle(
                   color: Color(0xFFCED4DA),
-                  fontSize: 13,
+                  fontSize: 12,
                 )),
             trailing: Text("${s['ownership_percentage']}%",
                 style: const TextStyle(
                   color: Color(0xFFCED4DA),
-                  fontSize: 13,
+                  fontSize: 12,
                 )),
           ),
         );

@@ -123,7 +123,9 @@ class OverviewTab extends StatelessWidget {
             children: [
               ...buildSection(context, "Komite Audit", komiteAudit),
             ],
-          )
+          ),
+
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -156,7 +158,7 @@ class OverviewTab extends StatelessWidget {
           Text(title,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontSize: 16,
               )),
           const SizedBox(height: 12),
           ...children,
@@ -198,8 +200,7 @@ List<Widget> buildSection(
 
   return data.map<Widget>((item) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12), // 🔥 jarak antar item
-      elevation: 3, // 🔥 depth
+      elevation: 5, // 🔥 depth
       color: Theme.of(context).colorScheme.surfaceVariant, // beda dikit
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
@@ -207,13 +208,13 @@ List<Widget> buildSection(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 8,
+          vertical: 0,
         ),
         title: Text(
           item['name'] ?? "-",
           style: const TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 13,
+            fontSize: 14,
           ),
         ),
         subtitle: item['position'] != null
@@ -223,7 +224,7 @@ List<Widget> buildSection(
                   "${item['position']}"
                   "${item['is_independent'] == true ? " • INDEPENDEN" : ""}",
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 11,
                     // fontStyle: FontStyle.italic,
                     color: Theme.of(context).colorScheme.primary,
                   ),
