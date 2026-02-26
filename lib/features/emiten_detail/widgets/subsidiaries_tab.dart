@@ -14,12 +14,21 @@ class SubsidiariesTab extends StatelessWidget {
 
         return Card(
           child: ListTile(
-            title: Text(s['name']),
-            subtitle: Text(
-              "${s['business_line']} • ${s['location']}", 
-              style: const TextStyle(color: const Color(0xFFCED4DA))
-            ),
-            trailing: Text("${s['ownership_percentage']}%"),
+            title: Text(s['name'],
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                )),
+            subtitle: Text("${s['business_line']} • ${s['location']}",
+                style: const TextStyle(
+                  color: Color(0xFFCED4DA),
+                  fontSize: 13,
+                )),
+            trailing: Text("${s['ownership_percentage']}%",
+                style: const TextStyle(
+                  color: Color(0xFFCED4DA),
+                  fontSize: 13,
+                )),
           ),
         );
       },
