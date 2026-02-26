@@ -25,7 +25,7 @@ class ShareholdersTab extends StatelessWidget {
         .toList();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       children: [
         _buildSection("Direksi", direksi),
         _buildSection("Komisaris", komisaris),
@@ -43,21 +43,26 @@ class ShareholdersTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 16),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0), // Atur jarak di sini
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 10),
+
         ...data.map((s) => Card(
+              elevation: 5.0,
+              margin: const EdgeInsets.only(bottom: 10),
               child: ListTile(
                   title: Text(
                     s['name'],
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 15,
                       // fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -100,6 +105,8 @@ class ShareholdersTab extends StatelessWidget {
                     ],
                   )),
             )),
+        
+        const SizedBox(height: 30),
       ],
     );
   }

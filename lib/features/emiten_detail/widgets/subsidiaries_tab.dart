@@ -8,11 +8,14 @@ class SubsidiariesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: const EdgeInsets.all(12),
       itemCount: subsidiaries.length,
       itemBuilder: (_, i) {
         final s = subsidiaries[i];
 
         return Card(
+          margin: const EdgeInsets.only(bottom: 10),
+          elevation: 5.0,
           child: ListTile(
             title: Text(s['name'],
                 style: const TextStyle(
