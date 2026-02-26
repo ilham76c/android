@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 
-
 class OverviewTab extends StatelessWidget {
   final Map<String, dynamic> profile;
   final List<double> sparklineData;
@@ -19,21 +18,14 @@ class OverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logoUrl = "https://www.idx.co.id${profile['logo_url']}";
-    final isPositive =
-        sparklineData.isNotEmpty &&
-        sparklineData.last >= sparklineData.first;
+    final direksi =
+        managements.where((m) => m['role_group'] == "Direksi").toList();
 
-    final priceSpots = List.generate(
-      sparklineData.length,
-      (i) => FlSpot(i.toDouble(), sparklineData[i]),
-    );
+    final komisaris =
+        managements.where((m) => m['role_group'] == "Komisaris").toList();
 
-    final direksi = managements?.where((m) => m['role_group'] == "Direksi").toList() ?? [];
-
-    final komisaris = managements?.where((m) => m['role_group'] == "Komisaris").toList() ?? [];
-
-    final komiteAudit = committees?.where((c) => c['committee_type'] == "Komite Audit").toList() ?? [];
+    final komiteAudit =
+        committees.where((c) => c['committee_type'] == "Komite Audit").toList();
 
     final prices = generateIntradayData();
 
@@ -42,12 +34,9 @@ class OverviewTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           /// ===== HEADER =====
           Row(
             children: [
-              // Image.network(logoUrl, height: 80),
-              // const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +62,6 @@ class OverviewTab extends StatelessWidget {
 
           /// ===== PREMIUM MINI CHART =====
           Container(
-            // padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: const Color(0xFF111418),
               borderRadius: BorderRadius.circular(16),
@@ -144,7 +132,7 @@ class OverviewTab extends StatelessWidget {
   List<double> generateIntradayData() {
     final random = Random();
     double firstPrice = 1000;
-    List<double> data = [];
+    final List<double> data = [];
 
     for (int i = 0; i < 20; i++) {
       firstPrice += random.nextDouble() * 8 - 4;
@@ -166,8 +154,10 @@ class OverviewTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15,)),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              )),
           const SizedBox(height: 12),
           ...children,
         ],
@@ -185,8 +175,7 @@ class OverviewTab extends StatelessWidget {
         children: [
           Expanded(
               flex: 3,
-              child:
-                  Text(label, style: const TextStyle(color: Colors.grey))),
+              child: Text(label, style: const TextStyle(color: Colors.grey))),
           Expanded(
             flex: 5,
             child: Text(
@@ -199,7 +188,6 @@ class OverviewTab extends StatelessWidget {
     );
   }
 }
-
 
 List<Widget> buildSection(
   BuildContext context,
@@ -264,11 +252,11 @@ class AdvancedStockChart extends StatelessWidget {
     final minPrice = prices.reduce(min);
 
     // 👇 paksa kelipatan 10
-    double minY = (minPrice ~/ 10) * 10;
-    double maxY = ((maxPrice ~/ 10) + 1) * 10;
-    double maxX = prices.length.toDouble();
+    final double minY = (minPrice ~/ 10) * 10;
+    final double maxY = ((maxPrice ~/ 10) + 1) * 10;
+    final double maxX = prices.length.toDouble();
 
-    double reservedWidth = calculateRightTitleWidth(
+    final double reservedWidth = calculateRightTitleWidth(
       minY: minY,
       maxY: maxY,
       interval: 10,
@@ -279,142 +267,140 @@ class AdvancedStockChart extends StatelessWidget {
     return Container(
       color: Colors.black,
       padding: const EdgeInsets.all(16),
-      
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// PRICE HEADER
-              Text(
-                lastPrice.toStringAsFixed(0),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+      child: Stack(children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// PRICE HEADER
+            Text(
+              lastPrice.toStringAsFixed(0),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-              Text(
-                "${change.toStringAsFixed(0)} (${percent.toStringAsFixed(2)}%)",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: isDown ? Colors.red : Colors.green,
-                ),
+            ),
+            Text(
+              "${change.toStringAsFixed(0)} (${percent.toStringAsFixed(2)}%)",
+              style: TextStyle(
+                fontSize: 16,
+                color: isDown ? Colors.red : Colors.green,
               ),
+            ),
 
-              const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-              /// CHART
-              AspectRatio(
-                aspectRatio: 2.5,
-                child: LineChart(
-                  LineChartData(
-                    backgroundColor: Colors.black,
-                    gridData: FlGridData(show: false),
-                    borderData: FlBorderData(show: false),
+            /// CHART
+            AspectRatio(
+              aspectRatio: 2.5,
+              child: LineChart(
+                LineChartData(
+                  backgroundColor: Colors.black,
+                  gridData: const FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
 
-                    minY: scale.minY,
-                    maxY: scale.maxY,
-                    maxX: maxX,
+                  minY: scale.minY,
+                  maxY: scale.maxY,
+                  maxX: maxX,
 
-                    /// Y AXIS
-                    titlesData: FlTitlesData(
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: reservedWidth,
-                          interval: scale.interval, // 👈 kelipatan 10
-                          getTitlesWidget: (value, meta) {
-                            return Text(
-                              value.toStringAsFixed(0),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
+                  /// Y AXIS
+                  titlesData: FlTitlesData(
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: reservedWidth,
+                        interval: scale.interval, // 👈 kelipatan 10
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toStringAsFixed(0),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          );
+                        },
                       ),
                     ),
-
-                    /// DASHED LAST PRICE LINE
-                    extraLinesData: ExtraLinesData(
-                      horizontalLines: [
-                        HorizontalLine(
-                          y: lastPrice,
-                          color: Colors.grey.withOpacity(0.4),
-                          strokeWidth: 1,
-                          dashArray: [6, 6],
-                        ),
-                      ],
+                    bottomTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
 
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: List.generate(
-                          prices.length,
-                          (index) => FlSpot(
-                            index.toDouble(),
-                            prices[index],
-                          ),
-                        ),
-                        isCurved: false,
-                        color: isDown ? Colors.red : Colors.green,
-                        barWidth: 2,
-                        dotData: FlDotData(show: false),
-
-                        /// GRADIENT FILL
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              (isDown ? Colors.red : Colors.green)
-                                  .withOpacity(0.4),
-                              Colors.transparent,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
+                  /// DASHED LAST PRICE LINE
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: lastPrice,
+                        color: Colors.grey.withOpacity(0.4),
+                        strokeWidth: 1,
+                        dashArray: [6, 6],
                       ),
                     ],
                   ),
+
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: List.generate(
+                        prices.length,
+                        (index) => FlSpot(
+                          index.toDouble(),
+                          prices[index],
+                        ),
+                      ),
+                      isCurved: false,
+                      color: isDown ? Colors.red : Colors.green,
+                      barWidth: 2,
+                      dotData: const FlDotData(show: false),
+
+                      /// GRADIENT FILL
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            (isDown ? Colors.red : Colors.green)
+                                .withOpacity(0.4),
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              /// RANGE SELECTOR
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const [
-                  _RangeButton("1D", selected: true),
-                  _RangeButton("1W"),
-                  _RangeButton("1M"),
-                  _RangeButton("3M"),
-                  _RangeButton("YTD"),
-                  _RangeButton("1Y"),
-                ],
-              )
-            ],
-          ),
-          /// BADGE
-          Positioned(
-            top: 5,
-            right: 5,
-            child: _BoardBadge(label: "Papan Utama"),
-          ),
-        ]
-      ),
+            /// RANGE SELECTOR
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _RangeButton("1D", selected: true),
+                _RangeButton("1W"),
+                _RangeButton("1M"),
+                _RangeButton("3M"),
+                _RangeButton("YTD"),
+                _RangeButton("1Y"),
+              ],
+            )
+          ],
+        ),
+
+        /// BADGE
+        const Positioned(
+          top: 5,
+          right: 5,
+          child: _BoardBadge(label: "Papan Utama"),
+        ),
+      ]),
     );
   }
 }
@@ -440,14 +426,14 @@ class AxisScale {
 }
 
 AxisScale calculateAxisScale(List<double> prices) {
-  double minPrice = prices.reduce((a, b) => a < b ? a : b);
-  double maxPrice = prices.reduce((a, b) => a > b ? a : b);
+  final double minPrice = prices.reduce((a, b) => a < b ? a : b);
+  final double maxPrice = prices.reduce((a, b) => a > b ? a : b);
 
-  double fraction = getPriceFraction((minPrice + maxPrice) / 2);
+  final double fraction = getPriceFraction((minPrice + maxPrice) / 2);
 
   const int maxLabels = 6;
 
-  double range = maxPrice - minPrice;
+  final double range = maxPrice - minPrice;
 
   // interval minimum sesuai fraksi
   double interval = fraction;
@@ -457,8 +443,8 @@ AxisScale calculateAxisScale(List<double> prices) {
     interval += fraction;
   }
 
-  double minY = (minPrice ~/ interval) * interval;
-  double maxY = ((maxPrice ~/ interval) + 1) * interval;
+  final double minY = (minPrice ~/ interval) * interval;
+  final double maxY = ((maxPrice ~/ interval) + 1) * interval;
 
   return AxisScale(
     minY: minY,
@@ -484,7 +470,6 @@ class _RangeButton extends StatelessWidget {
     );
   }
 }
-
 
 double calculateRightTitleWidth({
   required double minY,
@@ -515,7 +500,6 @@ double calculateRightTitleWidth({
 
   return maxWidth + 5; // kasih sedikit padding
 }
-
 
 class _BoardBadge extends StatelessWidget {
   final String label;

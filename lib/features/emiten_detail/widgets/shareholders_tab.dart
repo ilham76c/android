@@ -17,10 +17,12 @@ class ShareholdersTab extends StatelessWidget {
     final majorHolders =
         shareholders.where((s) => s['category'] == "Lebih dari 5%").toList();
 
-    final others = shareholders.where((s) =>
-        s['category'] != "Direksi" &&
-        s['category'] != "Komisaris" &&
-        s['category'] != "Lebih dari 5%").toList();
+    final others = shareholders
+        .where((s) =>
+            s['category'] != "Direksi" &&
+            s['category'] != "Komisaris" &&
+            s['category'] != "Lebih dari 5%")
+        .toList();
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -52,52 +54,51 @@ class ShareholdersTab extends StatelessWidget {
         const SizedBox(height: 10),
         ...data.map((s) => Card(
               child: ListTile(
-                title: Text(
-                  s['name'],
-                  style: const TextStyle(
-                    fontSize: 13,
-                    // fontWeight: FontWeight.bold,
+                  title: Text(
+                    s['name'],
+                    style: const TextStyle(
+                      fontSize: 13,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                subtitle: s['is_controller'] 
-                  ? const Text(
-                      "Pengendali", 
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.green,
-                      ),
-                    ) 
-                  : s['position'] != null && s['position'].toString().isNotEmpty ? Text(
-                      "${s['position']} ${s['is_independent'] == true ? "(Independen)" : ""}", 
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.green,
-                      )) : const Text("-", style: const TextStyle(
-                        fontSize: 11,
-                        fontStyle: FontStyle.italic,
-                        color: const Color(0xFFCED4DA),
-                      )),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "${s['percentage']}%",
-                      style: const TextStyle(
-                        fontSize: 13,
-                      )
-                    ),
-                    Text(
-                      "${formatter.format(s['shares_count'])} shares",
-                      style: const TextStyle(
-                        fontSize: 11,
-                      )
-                    ),
-                  ],
-                )
-              ),
+                  subtitle: s['is_controller']
+                      ? const Text(
+                          "Pengendali",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.green,
+                          ),
+                        )
+                      : s['position'] != null &&
+                              s['position'].toString().isNotEmpty
+                          ? Text(
+                              "${s['position']} ${s['is_independent'] == true ? "(Independen)" : ""}",
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.green,
+                              ))
+                          : const Text("-",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontStyle: FontStyle.italic,
+                                color: Color(0xFFCED4DA),
+                              )),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text("${s['percentage']}%",
+                          style: const TextStyle(
+                            fontSize: 13,
+                          )),
+                      Text("${formatter.format(s['shares_count'])} shares",
+                          style: const TextStyle(
+                            fontSize: 11,
+                          )),
+                    ],
+                  )),
             )),
       ],
     );
