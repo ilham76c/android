@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 
 class OverviewTab extends StatelessWidget {
-  final Map<String, dynamic> profile;
+  final Map<String, dynamic>? profile;
   final List<double> sparklineData;
   final List managements;
   final List committees;
@@ -34,40 +34,20 @@ class OverviewTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 16),
           /// ===== HEADER =====
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      profile['name'] ?? '',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      profile['symbol'] ?? '',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              )
-            ],
+          Text(
+            profile?['name'] ?? '',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          /// ===== PREMIUM MINI CHART =====
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF111418),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: AdvancedStockChart(prices: prices),
-          ),
+          /// ===== MINI CHART =====
+          StockChart(prices: prices),
 
           const SizedBox(height: 24),
 
@@ -76,9 +56,9 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Business Information",
             children: [
-              _infoRow("Sector", profile['sector']),
-              _infoRow("Industry", profile['industry']),
-              _infoRow("Main Business", profile['main_business']),
+              _infoRow("Sector", profile?['sector']),
+              _infoRow("Industry", profile?['industry']),
+              _infoRow("Main Business", profile?['main_business']),
             ],
           ),
 
@@ -89,9 +69,9 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Contact",
             children: [
-              _infoRow("Website", profile['website']),
-              _infoRow("Email", profile['email']),
-              _infoRow("Phone", profile['phone']),
+              _infoRow("Website", profile?['website']),
+              _infoRow("Email", profile?['email']),
+              _infoRow("Phone", profile?['phone']),
             ],
           ),
 
@@ -101,7 +81,7 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Directors",
             children: [
-              ...buildSection(context, "Direksi", direksi),
+              ..._buildSection(context, "Direksi", direksi),
             ],
           ),
 
@@ -111,7 +91,7 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Commissioners",
             children: [
-              ...buildSection(context, "Komisaris", komisaris),
+              ..._buildSection(context, "Komisaris", komisaris),
             ],
           ),
 
@@ -121,7 +101,7 @@ class OverviewTab extends StatelessWidget {
             context,
             title: "Board Committees",
             children: [
-              ...buildSection(context, "Komite Audit", komiteAudit),
+              ..._buildSection(context, "Komite Audit", komiteAudit),
             ],
           ),
 
@@ -191,7 +171,7 @@ class OverviewTab extends StatelessWidget {
   }
 }
 
-List<Widget> buildSection(
+List<Widget> _buildSection(
   BuildContext context,
   String title,
   List data,
@@ -236,10 +216,10 @@ List<Widget> buildSection(
   }).toList();
 }
 
-class AdvancedStockChart extends StatelessWidget {
+class StockChart extends StatelessWidget {
   final List<double> prices;
 
-  const AdvancedStockChart({super.key, required this.prices});
+  const StockChart({super.key, required this.prices});
 
   @override
   Widget build(BuildContext context) {
@@ -266,8 +246,11 @@ class AdvancedStockChart extends StatelessWidget {
     final scale = calculateAxisScale(prices);
 
     return Container(
-      color: Colors.black,
       padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(5),
+      ),
       child: Stack(children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
