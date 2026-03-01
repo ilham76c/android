@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             WatchlistItem(
-              ticker: "BBKP",
+              ticker: "PTBA",
               change: "-1.2M",
               positive: false,
                onTap: () {
@@ -68,14 +68,14 @@ class HomeScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => EmitenDetailPage(
-                      ticker: "BBKP",
+                      ticker: "PTBA",
                     ),
                   ),
                 );
               },
             ),
             WatchlistItem(
-              ticker: "MLPL",
+              ticker: "ADRO",
               change: "-1.2M",
               positive: false,
                onTap: () {
@@ -83,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => EmitenDetailPage(
-                      ticker: "MLPL",
+                      ticker: "ADRO",
                     ),
                   ),
                 );
