@@ -4,6 +4,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/watchlist/screens/watchlist_screen.dart';
 import '../../features/explore/screens/explore_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/ownership/screens/ownership_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -18,7 +19,8 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = const [
     HomeScreen(),
     WatchlistScreen(),
-    ExploreScreen(),
+    OwnershipScreen(),
+    // ExploreScreen(),
     ProfileScreen(),
   ];
 
@@ -50,8 +52,8 @@ class _MainNavigationState extends State<MainNavigation> {
             label: "Watchlist",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Explore",
+            icon: Icon(Icons.apartment),
+            label: "Ownership",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
