@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../data/ownership_service.dart';
-import '../widgets/ownership_line_chart.dart';
 import '../model/ownership_model.dart';
+import '../widgets/ownership_line_chart.dart';
 
 class OwnershipScreen extends StatefulWidget {
   const OwnershipScreen({super.key});
@@ -11,75 +12,65 @@ class OwnershipScreen extends StatefulWidget {
 }
 
 class _OwnershipScreenState extends State<OwnershipScreen> {
-  late Future<List<OwnershipData>> _futureData;
+
+  late Future<OwnershipChartResponse> _future;
 
   @override
   void initState() {
     super.initState();
-    // _futureData = OwnershipService.fetchOwnership();
-    _futureData = OwnershipService.fetchOwnership("KBAG");
-
+    _future = OwnershipService.fetchChart("JAYA");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Ownership Chart")),
-      body: FutureBuilder<List<OwnershipData>>(
-        future: _futureData,
+      body: FutureBuilder<OwnershipChartResponse>(
+        future: _future,
         builder: (context, snapshot) {
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            return Center(child: Text(snapshot.error.toString()));
           }
 
-          final rawData = snapshot.data ?? [];
+          final data = snapshot.data!;
 
-          // 1️⃣ Group per investor
-          final Map<String, List<OwnershipData>> grouped = {};
+          return Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-          for (var item in rawData) {
-            grouped.putIfAbsent(item.investor, () => []).add(item);
-          }
+                Text(
+                  data.ticker,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
 
-          // 2️⃣ Ambil semua tanggal unik
-          final allDates = rawData
-              .map((e) => e.date)
-              .toSet()
-              .toList()
-            ..sort();
+                const SizedBox(height: 4),
 
-          // 3️⃣ Align semua tanggal untuk setiap investor
-          grouped.forEach((key, list) {
-            list.sort((a, b) => a.date.compareTo(b.date));
+                const Text(
+                  "Ownership Trend",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                ),
 
-            final mapByDate = {for (var d in list) d.date: d};
+                const SizedBox(height: 12),
 
-            double lastShares = 0;
-
-            grouped[key] = allDates.map((date) {
-              if (mapByDate.containsKey(date)) {
-                lastShares = mapByDate[date]!.shares;
-                return mapByDate[date]!;
-              } else {
-                return OwnershipData(
-                  date: date,
-                  investor: key,
-                  investorType: '',
-                  shares: lastShares, // 🔥 carry forward
-                  sharesChange: 0,
-                  cumulativeChange: 0,
-                );
-              }
-            }).toList();
-          });
-
-
-          // 4️⃣ Kirim ke chart
-          return OwnershipLineChart(data: grouped.values.expand((e) => e).toList());
+                Expanded(
+                  child: OwnershipLineChart(data: data),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );

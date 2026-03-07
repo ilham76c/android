@@ -4,34 +4,29 @@ import '../../../core/config/env.dart';
 import '../model/ownership_model.dart';
 
 class OwnershipService {
-  static Future<List<OwnershipData>> fetchOwnership(
-      String ticker) async {
-    final uri = Uri.parse("${Env.baseUrl}/ownership/changes")
-        .replace(queryParameters: {
-          "ticker": ticker,
-          "investor_type": "L",
-          "start_date": "2026-01-01",
-          "end_date": "2026-01-31",
-          "limit": "50",
-        });
+
+  static Future<OwnershipChartResponse> fetchChart(String ticker) async {
+
+    // final uri = Uri.parse(
+    //   "https://your-api.com/ownership/chart?ticker=$ticker"
+    // );
+
+   final uri = Uri.parse("${Env.baseUrl}/ownership/monthly/changes")
+      .replace(queryParameters: {
+        "ticker": ticker,
+        "investor_type": "L",
+        "start_date": "2025-02-01",
+        "end_date": "2026-04-28",
+        "limit": "10",
+      });
 
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> decoded =
-          json.decode(response.body);
-
-      if (decoded["success"] == true) {
-        final List<dynamic> data = decoded["data"];
-
-        return data
-            .map((item) => OwnershipData.fromJson(item))
-            .toList();
-      } else {
-        throw Exception("API returned success=false");
-      }
-    } else {
-      throw Exception("Failed to fetch ownership");
+      final jsonData = json.decode(response.body);
+      return OwnershipChartResponse.fromJson(jsonData);
     }
+
+    throw Exception("Failed to load ownership chart");
   }
 }

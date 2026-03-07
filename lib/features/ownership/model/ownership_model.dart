@@ -1,34 +1,61 @@
-class OwnershipData {
-  final DateTime date;
-  final String investor;
-  final String investorType;
-  final double shares;
-  final double sharesChange;
-  final double cumulativeChange;
+class OwnershipChartResponse {
+  final String ticker;
+  final double totalShares;
+  final List<DateTime> periods;
+  final List<OwnershipSeries> series;
 
-  OwnershipData({
-    required this.date,
-    required this.investor,
-    required this.investorType,
-    required this.shares,
-    required this.sharesChange,
-    required this.cumulativeChange,
+  OwnershipChartResponse({
+    required this.ticker,
+    required this.totalShares,
+    required this.periods,
+    required this.series,
   });
 
-  factory OwnershipData.fromJson(Map<String, dynamic> json) {
-    return OwnershipData(
-      date: DateTime.parse(json['ownership_date']),
-      investor: _normalizeInvestor(json['investor_name']),
-      investorType: json['investor_type'] ?? '',
-      shares: (json['shares'] ?? 0).toDouble(),
-      sharesChange: (json['shares_change'] ?? 0).toDouble(),
-      cumulativeChange:
-          (json['cumulative_shares_change'] ?? 0).toDouble(),
+  factory OwnershipChartResponse.fromJson(Map<String, dynamic> json) {
+    final data = json["data"];
+
+    return OwnershipChartResponse(
+      ticker: data["ticker"],
+      totalShares: double.parse(data["total_shares"]),
+      periods: (data["periods"] as List)
+          .map((e) => DateTime.parse(e))
+          .toList(),
+      series: (data["series"] as List)
+          .map((e) => OwnershipSeries.fromJson(e))
+          .toList(),
     );
   }
+}
 
-  // 🔥 Normalisasi nama supaya tidak dobel di chart
-  static String _normalizeInvestor(String name) {
-    return name.replaceAll('.', '').trim().toUpperCase();
+class OwnershipSeries {
+  final String investor;
+  final List<double> shares;
+
+  OwnershipSeries({
+    required this.investor,
+    required this.shares,
+  });
+
+  factory OwnershipSeries.fromJson(Map<String, dynamic> json) {
+    return OwnershipSeries(
+      investor: json["investor"],
+      shares: (json["shares"] as List)
+          .map((e) => (e as num).toDouble())
+          .toList(),
+    );
   }
+}
+
+class OwnershipChartPoint {
+  final DateTime date;
+  final double shares;
+  final double percent;
+  final String investor;
+
+  OwnershipChartPoint({
+    required this.date,
+    required this.shares,
+    required this.percent,
+    required this.investor,
+  });
 }
