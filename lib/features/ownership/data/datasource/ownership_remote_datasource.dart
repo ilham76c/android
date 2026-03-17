@@ -12,7 +12,7 @@ class OwnershipRemoteDataSource {
       "ticker": ticker,
       "investor_type": "L",
       "start_date": "2025-12-18",
-      "end_date": "2026-01-29",
+      "end_date": "2026-01-10",
       "limit": "100",
     });
 

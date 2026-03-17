@@ -4,7 +4,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/watchlist/screens/watchlist_screen.dart';
 import '../../features/explore/screens/explore_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
-import '../../features/ownership/screens/ownership_screen.dart';
+import '../../features/ownership/presentation/screens/ownership_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -33,7 +33,11 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      // body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
