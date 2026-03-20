@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'features/ownership/screens/ownership_screen.dart';
-import 'features/home/screens/home_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'core/navigation/main_navigation.dart';
 
