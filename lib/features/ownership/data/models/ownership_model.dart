@@ -4,7 +4,7 @@ class OwnershipModel {
   final String ticker;
   final String name;
   final List<String> periods;
-  final String totalShares;
+  final double? totalShares;
   final List<OwnershipSeriesModel> series;
 
   OwnershipModel({
@@ -20,7 +20,7 @@ class OwnershipModel {
       ticker: json['ticker'],
       name: json['name'],
       periods: List<String>.from(json['periods']),
-      totalShares: json['total_shares'],
+      totalShares: double.tryParse(json['total_shares'].toString()),
       series: (json['series'] as List)
           .map((e) => OwnershipSeriesModel.fromJson(e))
           .toList(),

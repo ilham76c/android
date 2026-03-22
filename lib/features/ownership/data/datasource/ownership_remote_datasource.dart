@@ -5,22 +5,22 @@ import '../models/ownership_model.dart';
 
 class OwnershipRemoteDataSource {
 
-  Future<OwnershipModel> fetchChart(String ticker) async {
+  Future<OwnershipModel> fetchChart(
+    String ticker, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
 
     final uri = Uri.parse("${Env.baseUrl}/ownership/changes")
         .replace(queryParameters: {
       "ticker": ticker,
+      if (startDate != null) "start_date": _formatDate(startDate),
+      if (endDate != null) "end_date": _formatDate(endDate),
       "investor_type": "L",
-      "start_date": "2025-12-18",
-      "end_date": "2026-01-10",
-      "limit": "100",
+      "limit": "10",
     });
 
     final response = await http.get(uri);
-    
-    if (response.statusCode != 200) {
-      throw Exception("API Error: ${response.statusCode}");
-    }
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -29,4 +29,10 @@ class OwnershipRemoteDataSource {
 
     throw Exception("Failed to load ownership chart");
   }
+
+  String _formatDate(DateTime date) {
+    return "${date.year}-${_two(date.month)}-${_two(date.day)}";
+  }
+
+  String _two(int n) => n.toString().padLeft(2, '0');
 }

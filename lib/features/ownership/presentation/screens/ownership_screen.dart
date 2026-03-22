@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../state/ownership_controller.dart';
 import '../widgets/charts/ownership_line_chart.dart';
 import '../../domain/usecases/get_ownership_chart.dart';
@@ -14,6 +15,7 @@ class OwnershipScreen extends StatefulWidget {
 
 class _OwnershipScreenState extends State<OwnershipScreen> {
   late OwnershipController controller;
+  DateTimeRange? _selectedRange;
 
   @override
   void initState() {
@@ -27,7 +29,19 @@ class _OwnershipScreenState extends State<OwnershipScreen> {
 
     controller = OwnershipController(usecase);
 
-    controller.load("SSIA");
+    // 🔥 default: 1 bulan terakhir
+    final now = DateTime.now();
+
+    _selectedRange = DateTimeRange(
+      start: now.subtract(const Duration(days: 30)),
+      end: now,
+    );
+
+    controller.loadWithRange(
+      "SSIA",
+      startDate: _selectedRange!.start,
+      endDate: _selectedRange!.end,
+    );
   }
 
   @override
@@ -60,6 +74,21 @@ class _OwnershipScreenState extends State<OwnershipScreen> {
 
                 const SizedBox(height: 12),
 
+                // Text(
+                //   "${_formatDate(_selectedRange!.start)} - ${_formatDate(_selectedRange!.end)}",
+                // ),
+                OutlinedButton.icon(
+                  onPressed: _pickDateRange,
+                  icon: const Icon(Icons.date_range, size: 16),
+                  label: Text(
+                    _selectedRange == null
+                        ? "Filter"
+                        : "${_formatDate(_selectedRange!.start)} - ${_formatDate(_selectedRange!.end)}",
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
                 Expanded(
                   child: OwnershipLineChart(data: data),
                 ),
@@ -69,5 +98,44 @@ class _OwnershipScreenState extends State<OwnershipScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _reloadData() async {
+    controller.loadWithRange(
+      "JAYA",
+      startDate: _selectedRange?.start,
+      endDate: _selectedRange?.end,
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
+  Future<void> _pickDateRange() async {
+    final now = DateTime.now();
+
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: now,
+      initialDateRange: _selectedRange ??
+          DateTimeRange(
+            start: now.subtract(const Duration(days: 30)),
+            end: now,
+          ),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedRange = picked;
+      });
+
+      controller.loadWithRange(
+        "SSIA",
+        startDate: picked.start,
+        endDate: picked.end,
+      );
+    }
   }
 }

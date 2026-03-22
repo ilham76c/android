@@ -6,7 +6,15 @@ class GetOwnershipChart {
 
   GetOwnershipChart(this.repository);
 
-  Future<OwnershipEntity> call(String ticker) {
-    return repository.getOwnershipChart(ticker);
+  Future<OwnershipEntity> call(
+    String ticker, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    return repository.getOwnershipChart(
+      ticker,
+      startDate: startDate,
+      endDate: endDate,
+    );
   }
 }

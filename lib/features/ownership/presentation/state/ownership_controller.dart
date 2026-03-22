@@ -27,4 +27,28 @@ class OwnershipController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> loadWithRange(
+    String ticker, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      data = await getOwnershipChart(
+        ticker,
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      error = null;
+    } catch (e) {
+      error = e.toString();
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }

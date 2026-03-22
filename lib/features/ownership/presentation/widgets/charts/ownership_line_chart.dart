@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../domain/entities/ownership_entity.dart';
 
-import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-
-import '../../../domain/entities/ownership_entity.dart';
-
 class OwnershipLineChart extends StatefulWidget {
   final OwnershipEntity data;
 
@@ -47,9 +42,7 @@ class _OwnershipLineChartState extends State<OwnershipLineChart> {
   // BUILD CHART SERIES
   // ======================
   List<LineSeries<_ChartPoint, String>> _buildSeries() {
-    return widget.data.series
-        .where((s) => _activeInvestors.contains(s.investor))
-        .map((s) {
+    return widget.data.series.map((s) {
       final chartData = <_ChartPoint>[];
 
       for (int i = 0; i < widget.data.periods.length; i++) {
@@ -66,11 +59,11 @@ class _OwnershipLineChartState extends State<OwnershipLineChart> {
         dataSource: chartData,
         xValueMapper: (p, _) => p.period,
         yValueMapper: (p, _) => p.value ?? 0,
-        width: 3,
+        width: 2,
         markerSettings: const MarkerSettings(
           isVisible: true,
-          width: 4,
-          height: 4,
+          width: 6,
+          height: 6,
         ),
       );
     }).toList();
@@ -119,31 +112,6 @@ class _OwnershipLineChartState extends State<OwnershipLineChart> {
   }
 
   // ======================
-  // Y AXIS SCALE FIX
-  // ======================
-  double _getMinY() {
-    final values = widget.data.series
-        .expand((s) => s.shares)
-        .whereType<double>()
-        .toList();
-
-    if (values.isEmpty) return 0;
-
-    return values.reduce((a, b) => a < b ? a : b);
-  }
-
-  double _getMaxY() {
-    final values = widget.data.series
-        .expand((s) => s.shares)
-        .whereType<double>()
-        .toList();
-
-    if (values.isEmpty) return 0;
-
-    return values.reduce((a, b) => a > b ? a : b);
-  }
-
-  // ======================
   // COLOR GENERATOR
   // ======================
   Color _getColor(String key) {
@@ -175,122 +143,247 @@ class _OwnershipLineChartState extends State<OwnershipLineChart> {
         // 🔥 CHART (ambil sisa space)
         Expanded(
           child: SfCartesianChart(
-            legend: Legend(isVisible: false),
+            backgroundColor: Colors.transparent,
 
-            primaryXAxis: CategoryAxis(
-              labelRotation: -30, // 🔥 miring 45 derajat
-              labelStyle: const TextStyle(
-                color: Color(0xFF9CA3AF),
-                fontSize: 10,
-              ),
-            ),
-
-            primaryYAxis: NumericAxis(
-              minimum: _getMinY() * 0.95,
-              maximum: _getMaxY() * 1.05,
-              labelStyle: const TextStyle(
-                color: Color(0xFF9CA3AF),
-                fontSize: 10,
-              ),
+            crosshairBehavior: CrosshairBehavior(
+              enable: true,
+              activationMode: ActivationMode.singleTap,
+              lineType: CrosshairLineType.vertical,
+              lineDashArray: const [5, 5],
             ),
 
             tooltipBehavior: TooltipBehavior(
               enable: true,
-              shared: true, // 🔥 penting (multi-series)
-              builder: (dynamic data, dynamic point, dynamic series,
-                  int pointIndex, int seriesIndex) {
-
+              shared: true,
+              color: Colors.transparent,
+              elevation: 0,
+              builder: (data, point, series, pointIndex, seriesIndex) {
                 return _buildTooltip(pointIndex);
+              },
+            ),
+
+            primaryXAxis: const CategoryAxis(
+              labelRotation: -45,
+              majorGridLines: MajorGridLines(width: 0),
+              axisLine: AxisLine(
+                color: Color(0xFF374151),
+              ),
+            ),
+
+            primaryYAxis: NumericAxis(
+              isVisible: true,
+              rangePadding: ChartRangePadding.none,
+              majorGridLines: const MajorGridLines(
+                width: 1,
+                dashArray: [4, 4],
+                color: Color(0xFF374151),
+              ),
+              axisLabelFormatter: (args) {
+                final value = args.value.toDouble();
+
+                if (value.abs() >= 1e9) {
+                  return ChartAxisLabel(
+                    '${(value / 1e9).toStringAsFixed(1)}B',
+                    const TextStyle(color: Color(0xFF9CA3AF)),
+                  );
+                }
+
+                if (value.abs() >= 1e6) {
+                  return ChartAxisLabel(
+                    '${(value / 1e6).toStringAsFixed(1)}M',
+                    const TextStyle(color: Color(0xFF9CA3AF)),
+                  );
+                }
+
+                if (value.abs() >= 1e3) {
+                  return ChartAxisLabel(
+                    '${(value / 1e3).toStringAsFixed(1)}K',
+                    const TextStyle(color: Color(0xFF9CA3AF)),
+                  );
+                }
+
+                return ChartAxisLabel(
+                  value.toStringAsFixed(0),
+                  const TextStyle(color: Color(0xFF9CA3AF)),
+                );
               },
             ),
 
             series: _buildSeries(),
           ),
         ),
+
+        // Container(
+        //   decoration: BoxDecoration(
+        //     color: const Color(0xFF111827),
+        //     borderRadius: BorderRadius.circular(12),
+        //     border: Border.all(color: const Color(0xFF1F2937)),
+        //   ),
+        //   padding: const EdgeInsets.all(12),
+        //   child: SfCartesianChart(
+        //     backgroundColor: Colors.transparent,
+
+        //     crosshairBehavior: CrosshairBehavior(
+        //       enable: true,
+        //       activationMode: ActivationMode.singleTap,
+        //       lineType: CrosshairLineType.vertical,
+        //       lineDashArray: const [5, 5],
+        //     ),
+
+        //     tooltipBehavior: TooltipBehavior(
+        //       enable: true,
+        //       shared: true,
+        //       color: Colors.transparent,
+        //       elevation: 0,
+        //       builder: (data, point, series, pointIndex, seriesIndex) {
+        //         return _buildTooltip(pointIndex);
+        //       },
+        //     ),
+
+        //     primaryXAxis: CategoryAxis(
+        //       labelRotation: -45,
+        //       majorGridLines: const MajorGridLines(width: 0),
+        //       axisLine: const AxisLine(
+        //         color: Color(0xFF374151),
+        //       ),
+        //     ),
+
+        //     primaryYAxis: NumericAxis(
+        //       isVisible: true,
+        //       majorGridLines: const MajorGridLines(
+        //         width: 1,
+        //         dashArray: [4, 4],
+        //         color: Color(0xFF374151),
+        //       ),
+        //       axisLabelFormatter: (args) {
+        //         final value = double.tryParse(args.text) ?? 0;
+
+        //         if (value.abs() >= 1e9) {
+        //           return ChartAxisLabel('${(value / 1e9).toStringAsFixed(1)}B', const TextStyle(color: Color(0xFF9CA3AF)));
+        //         }
+        //         if (value.abs() >= 1e6) {
+        //           return ChartAxisLabel('${(value / 1e6).toStringAsFixed(1)}M', const TextStyle(color: Color(0xFF9CA3AF)));
+        //         }
+        //         if (value.abs() >= 1e3) {
+        //           return ChartAxisLabel('${(value / 1e3).toStringAsFixed(1)}K', const TextStyle(color: Color(0xFF9CA3AF)));
+        //         }
+
+        //         return ChartAxisLabel(value.toStringAsFixed(0), const TextStyle(color: Color(0xFF9CA3AF)));
+        //       },
+        //     ),
+
+        //     series: _buildSeries(),
+        //   ),
+        // )
       ],
     );
   }
 
-  Widget _buildTooltip(int dataIndex) {
-    final period = widget.data.periods[dataIndex];
+  Widget _buildTooltip(int index) {
+    final period = widget.data.periods[index];
 
-    return IntrinsicWidth(
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // 🔥 AUTO HEIGHT
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F2937),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
 
-            Text(
-              period,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+          // 🔥 TITLE
+          Text(
+            period,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
+          ),
 
-            const SizedBox(height: 6),
+          const SizedBox(height: 6),
 
-            ...widget.data.series.map((s) {
-              final current = s.shares[dataIndex] ?? 0;
-              final prev =
-                  dataIndex > 0 ? (s.shares[dataIndex - 1] ?? 0) : 0;
+          // 🔥 SERIES LOOP
+          ...widget.data.series.map((s) {
+            final current = s.shares[index] ?? 0;
+            final prev =
+                index > 0 ? (s.shares[index - 1] ?? 0) : 0;
 
-              final change = current - prev;
+            final change = current - prev;
 
-              Color color = Colors.grey;
-              if (change > 0) color = Colors.green;
-              if (change < 0) color = Colors.red;
+            Color color = const Color(0xFF9CA3AF);
+            if (change > 0) color = const Color(0xFF22C55E);
+            if (change < 0) color = const Color(0xFFEF4444);
 
-              final changeText = dataIndex == 0
-                  ? ''
-                  : ' (${change > 0 ? '+' : ''}${_formatNumber(change)})';
+            final changeText = index == 0
+                ? ''
+                : ' (${change > 0 ? '+' : ''}${_formatNumber(change)})';
 
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.only(right: 6, top: 4),
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    margin: const EdgeInsets.only(right: 6, top: 4),
+                    decoration: BoxDecoration(
                       color: _getColor(s.investor),
+                      shape: BoxShape.circle,
                     ),
+                  ),
 
-                    Expanded(
-                      child: Text(
-                        '${s.investor}: ${_formatNumber(current)}$changeText',
-                        style: TextStyle(
-                          color: color,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        softWrap: true, // 🔥 penting
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${s.investor}: ',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                          TextSpan(
+                            text: _formatNumber(current),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                          TextSpan(
+                            text: changeText,
+                            style: TextStyle(
+                              color: color,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              );
-            }),
-          ],
-        ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
 
   String _formatNumber(num value) {
-    final abs = value.abs();
-
-    if (abs >= 1e9) return '${(value / 1e9).toStringAsFixed(1)}B';
-    if (abs >= 1e6) return '${(value / 1e6).toStringAsFixed(1)}M';
-    if (abs >= 1e3) return '${(value / 1e3).toStringAsFixed(1)}K';
-
+    if (value.abs() >= 1e9) return '${(value / 1e9).toStringAsFixed(1)}B';
+    if (value.abs() >= 1e6) return '${(value / 1e6).toStringAsFixed(1)}M';
+    if (value.abs() >= 1e3) return '${(value / 1e3).toStringAsFixed(1)}K';
     return value.toStringAsFixed(0);
   }
 }

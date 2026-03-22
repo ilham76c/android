@@ -8,8 +8,17 @@ class OwnershipRepositoryImpl implements OwnershipRepository {
   OwnershipRepositoryImpl(this.remote);
 
   @override
-  Future<OwnershipEntity> getOwnershipChart(String ticker) async {
-    final model = await remote.fetchChart(ticker);
-    return model.toEntity(); // 🔥 convert ke domain
+  Future<OwnershipEntity> getOwnershipChart(
+    String ticker, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final model = await remote.fetchChart(
+      ticker,
+      startDate: startDate,
+      endDate: endDate,
+    );
+
+    return model.toEntity();
   }
 }
